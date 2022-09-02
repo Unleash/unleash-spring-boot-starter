@@ -51,7 +51,7 @@ public class UnleashAutoConfiguration {
 
     @Bean(name = "features.autoproxy")
     @ConditionalOnBean({Unleash.class, FeatureAdvisor.class})
-    public FeatureProxyAdvisor featureProxyAdvisor(final ApplicationContext applicationContext) {
+    public FeatureProxyAdvisor featureProxyAdvisor(final ApplicationContext applicationContext, final FeatureAdvisor featureAdvisor, final Unleash unleash) {
         return new FeatureProxyAdvisor(applicationContext);
     }
 }
