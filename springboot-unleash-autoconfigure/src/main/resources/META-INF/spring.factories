@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.leo.unleash.config.UnleashAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.unleash.features.config.UnleashAutoConfiguration

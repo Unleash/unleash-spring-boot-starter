@@ -1,4 +1,4 @@
-package org.leo.unleash.autoconfigure;
+package org.unleash.features.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

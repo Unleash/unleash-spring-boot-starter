@@ -1,10 +1,10 @@
-package org.leo.unleash.config;
+package org.unleash.features.config;
 
 import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
-import org.leo.unleash.autoconfigure.UnleashProperties;
+import org.unleash.features.autoconfigure.UnleashProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
