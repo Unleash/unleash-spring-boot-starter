@@ -5,7 +5,6 @@ import io.getunleash.Unleash;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,7 +25,6 @@ public class UnleashAutoConfiguration {
     private Map<String, ? extends Strategy> strategyMap;
 
     @Bean
-    @ConditionalOnBean(UnleashProperties.class)
     public Unleash unleash(final UnleashProperties unleashProperties) {
         final UnleashConfig unleashConfig = UnleashConfig
                 .builder()
