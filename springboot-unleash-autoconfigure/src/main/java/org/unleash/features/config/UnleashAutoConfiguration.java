@@ -20,7 +20,7 @@ import java.util.UUID;
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration
 @EnableConfigurationProperties(UnleashProperties.class)
-@ComponentScan("org.leo.unleash.aop")
+@ComponentScan("org.unleash.features.aop")
 public class UnleashAutoConfiguration {
     @Autowired(required = false)
     private Map<String, ? extends Strategy> strategyMap;

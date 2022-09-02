@@ -2,7 +2,7 @@ package org.unleash.features.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "io.unleash")
+@ConfigurationProperties(prefix = "io.getunleash")
 public class UnleashProperties {
     private String appName;
     private String instanceId;
