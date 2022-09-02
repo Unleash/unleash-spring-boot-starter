@@ -26,7 +26,7 @@ public class UnleashAutoConfiguration {
     private Map<String, ? extends Strategy> strategyMap;
 
     @Bean
-    @ConditionalOnProperty(prefix = "io.unleash", value = {"appName", "environment", "apiUrl", "apiToken"})
+    @ConditionalOnProperty(prefix = "io.getunleash", value = {"appName", "environment", "apiUrl", "apiToken"})
     public Unleash unleash(final UnleashProperties unleashProperties) {
         final UnleashConfig unleashConfig = UnleashConfig
                 .builder()
