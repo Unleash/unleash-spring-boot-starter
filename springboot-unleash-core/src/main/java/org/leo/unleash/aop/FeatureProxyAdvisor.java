@@ -2,36 +2,28 @@ package org.leo.unleash.aop;
 
 import org.leo.unleash.annotation.Toggle;
 import org.springframework.aop.TargetSource;
-import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component("features.autoproxy")
 public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
     /** Serial number. */
     private static final long serialVersionUID = -364406999854610869L;
 
     /** Cache to avoid two-passes on same interfaces. */
     private final Map<String, Boolean> processedInterface = new HashMap<String, Boolean>();
-    private final ApplicationContext applicationContext
-            ;
+
 
     /**
      * Default constructor invoked by spring.
      */
     public FeatureProxyAdvisor() {
-        // Define scanner for classes at startup
-        this(null);
-    }
-
-    public FeatureProxyAdvisor(final ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
         // Define scanner for classes at startup
         setInterceptorNames(getBeanNameOfFeatureAdvisor());
     }
@@ -43,23 +35,7 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
      *      id of {@link FeatureAdvisor} bean
      */
     private String getBeanNameOfFeatureAdvisor() {
-        try {
-            for (final String beanName : applicationContext.getBeanDefinitionNames()) {
-                Object bean = applicationContext.getBean(beanName);
-
-                if (AopUtils.isJdkDynamicProxy(bean)) {
-                    bean = ((Advised) bean).getTargetSource().getTarget();
-                }
-
-                if (bean != null && bean.getClass().isAssignableFrom(FeatureAdvisor.class)) {
-                    return beanName;
-                }
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot find FeatureAdvisor");
-        }
-
-        throw new IllegalArgumentException("Cannot find FeatureAdvisor");
+        return FeatureAdvisor.class.getAnnotation(Component.class).value();
     }
 
     /** {@inheritDoc} */
