@@ -4,20 +4,18 @@ import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
-import org.unleash.features.autoconfigure.UnleashProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.unleash.features.autoconfigure.UnleashProperties;
 
 import java.util.Map;
 import java.util.UUID;
-
-import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration
@@ -28,7 +26,7 @@ public class UnleashAutoConfiguration {
     private Map<String, ? extends Strategy> strategyMap;
 
     @Bean
-    @ConditionalOnProperty(prefix = PREFIX, value = {"appName", "environment", "apiUrl", "apiToken"})
+    @ConditionalOnBean(UnleashProperties.class)
     public Unleash unleash(final UnleashProperties unleashProperties) {
         final UnleashConfig unleashConfig = UnleashConfig
                 .builder()
