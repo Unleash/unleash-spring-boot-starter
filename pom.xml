@@ -7,12 +7,23 @@
     <groupId>net.leodb.unleash</groupId>
     <artifactId>unleash-starter</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>springboot-unleash-core</module>
         <module>springboot-unleash-autoconfigure</module>
         <module>springboot-unleash-starter</module>
     </modules>
+
+    <name>Unleash features starter</name>
+    <url>https://github.com/praveenpg/unleash-starter</url>
+
+    <developers>
+        <developer>
+            <name>Praveen Govindan</name>
+            <email>praveen.govindan@gmail.com</email>
+            <organization>Praveen Govindan</organization>
+        </developer>
+    </developers>
 
     <description>
         Spring boot starter for unleash feature toggle
@@ -110,7 +121,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
