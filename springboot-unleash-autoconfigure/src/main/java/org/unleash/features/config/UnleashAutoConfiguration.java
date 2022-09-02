@@ -17,6 +17,8 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
+
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration
 @EnableConfigurationProperties(UnleashProperties.class)
@@ -26,7 +28,7 @@ public class UnleashAutoConfiguration {
     private Map<String, ? extends Strategy> strategyMap;
 
     @Bean
-    @ConditionalOnProperty(prefix = "io.getunleash", value = {"appName", "environment", "apiUrl", "apiToken"})
+    @ConditionalOnProperty(prefix = PREFIX, value = {"appName", "environment", "apiUrl", "apiToken"})
     public Unleash unleash(final UnleashProperties unleashProperties) {
         final UnleashConfig unleashConfig = UnleashConfig
                 .builder()

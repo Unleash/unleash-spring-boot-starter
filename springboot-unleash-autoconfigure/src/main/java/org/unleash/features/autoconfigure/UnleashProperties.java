@@ -2,13 +2,17 @@ package org.unleash.features.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "io.getunleash")
+import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
+
+@ConfigurationProperties(prefix = PREFIX)
 public class UnleashProperties {
     private String appName;
     private String instanceId;
     private String environment;
     private String apiUrl;
     private String apiToken;
+
+    public static final String PREFIX = "io.getunleash";
 
     public String getAppName() {
         return appName;
