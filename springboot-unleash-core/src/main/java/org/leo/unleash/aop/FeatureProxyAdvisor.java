@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component("features.autoproxy")
+@Component("feature.autoproxy")
 public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
     /** Serial number. */
     private static final long serialVersionUID = -364406999854610869L;

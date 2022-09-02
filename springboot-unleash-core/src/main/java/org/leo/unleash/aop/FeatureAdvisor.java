@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-@Component("features.advisor")
+@Component("feature.advisor")
 public class FeatureAdvisor implements MethodInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureAdvisor.class);
     private final Unleash unleash;

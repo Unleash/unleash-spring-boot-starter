@@ -4,15 +4,13 @@ import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
-import org.leo.unleash.aop.FeatureAdvisor;
-import org.leo.unleash.aop.FeatureProxyAdvisor;
 import org.leo.unleash.autoconfigure.UnleashProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -22,7 +20,7 @@ import java.util.UUID;
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration
 @EnableConfigurationProperties(UnleashProperties.class)
-@Import({FeatureAdvisor.class, FeatureProxyAdvisor.class})
+@ComponentScan("org.leo.unleash.aop")
 public class UnleashAutoConfiguration {
     @Autowired(required = false)
     private Map<String, ? extends Strategy> strategyMap;
