@@ -1,1 +1,4 @@
 /.idea
+/springboot-unleash-autoconfigure/target
+/springboot-unleash-core/target
+/springboot-unleash-starter/target
