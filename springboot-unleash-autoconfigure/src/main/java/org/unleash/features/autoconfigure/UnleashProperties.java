@@ -12,6 +12,8 @@ public class UnleashProperties {
     private String apiUrl;
     private String apiToken;
 
+    private HttpFetcher httpFetcher = HttpFetcher.HTTP_URL_CONNECTION_FETCHER;
+
     public static final String PREFIX = "io.getunleash";
 
     public String getAppName() {
@@ -52,5 +54,18 @@ public class UnleashProperties {
 
     public void setApiToken(String apiToken) {
         this.apiToken = apiToken;
+    }
+
+    public HttpFetcher getHttpFetcher() {
+        return httpFetcher;
+    }
+
+    public void setHttpFetcher(HttpFetcher httpFetcher) {
+        this.httpFetcher = httpFetcher;
+    }
+
+    public enum HttpFetcher {
+        HTTP_URL_CONNECTION_FETCHER,
+        OK_HTTP
     }
 }
