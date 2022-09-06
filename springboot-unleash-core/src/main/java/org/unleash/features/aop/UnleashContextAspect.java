@@ -18,10 +18,6 @@ public class UnleashContextAspect {
 
     @Around("execution(public * *(.., @org.unleash.features.annotation.Context (*), ..))")
     public Object aroundContextAnnotation(final ProceedingJoinPoint pjp) throws Throwable {
-        return getObject(pjp);
-    }
-
-    private static Object getObject(final ProceedingJoinPoint pjp) throws Throwable {
         try {
             final MethodSignature signature = (MethodSignature) pjp.getSignature();
             final String methodName = signature.getMethod().getName();
