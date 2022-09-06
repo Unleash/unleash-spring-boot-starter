@@ -30,10 +30,6 @@ public class UnleashContextAspect {
                     .forEach(index -> Arrays.stream(annotations[index])
                             .forEach(annotation -> setUnleashContext(parameterTypes, params, contextBuilder, index, annotation)));
 
-            unleashContext = contextBuilder.build();
-
-            UnleashContextThreadLocal.set(unleashContext);
-
             return pjp.proceed();
         } finally {
             UnleashContextThreadLocal.unset();
@@ -56,7 +52,7 @@ public class UnleashContextAspect {
                     throw new IllegalArgumentException("Only string params can be annotated with Context annotation");
                 }
 
-                contextBuilder.addProperty(contextAnnotation.name(), (String) arg);
+                UnleashContextThreadLocal.addContextProperty(contextAnnotation.name(), (String) arg);
             }
         }
     }
