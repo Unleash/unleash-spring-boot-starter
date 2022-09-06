@@ -125,3 +125,4 @@ public class FeatureDemoController {
 - With the above, if the `demo-toggle` feature is enabled, the `featureNewService` is called even though `featureOldService` was injected.
 
 - git link to example app below:
+  - https://github.com/praveenpg/unleash-starter-demo
