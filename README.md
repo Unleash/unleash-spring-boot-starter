@@ -89,6 +89,15 @@ public interface FeatureDemoService {
 is injected where required.
 - If `contextPath` in `Toggle` is set to METHOD
 ```java
+import io.getunleash.UnleashContext;
+import org.unleash.features.annotation.Toggle;
+
+public interface FeatureDemoService {
+    @Toggle(name="demo-toggle", alterBean="featureNewService")
+    String getDemoString(String name, UnleashContext context);
+}
+```
+```java
 @RestController
 @RequestMapping("/feature")
 public class FeatureDemoController {
@@ -100,11 +109,20 @@ public class FeatureDemoController {
     
     @GetMapping
     public String feature(@RequestMapping final String name) {
-        return featureDemoService.getDemoString(name);
+        return featureDemoService.getDemoString(name, UnleashContext.builder().addProperty("name", name).build());
     }
 }
 ```
 - If `contextPath` in `Toggle` is set to THREADLOCAL
+```java
+import io.getunleash.UnleashContext;
+import org.unleash.features.annotation.Toggle;
+
+public interface FeatureDemoService {
+    @Toggle(name="demo-toggle", alterBean="featureNewService", contextPath=ContextPath.THREADLOCAL)
+    String getDemoString(String name);
+}
+```
 ```java
 @RestController
 @RequestMapping("/feature")
