@@ -29,8 +29,6 @@ public class UnleashContextAspect {
 
             annotations = pjp.getTarget().getClass().getMethod(methodName, parameterTypes).getParameterAnnotations();
 
-            LOGGER.info("Annotations: " + Arrays.deepToString(annotations));
-
             int i = 0;
 
             for (final Object arg : params) {
