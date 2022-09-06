@@ -65,6 +65,7 @@ public class FeatureDemoNewServiceImpl implements FeatureDemoService {
 ```
 - The requirement is that if the feature is enabled on the server, the new service implementation is used.
 - To get the above functionality add the `@Toggle` annotation to the interface,
+- If `contextPath` in `Toggle` is set to METHOD
 ```java
 import io.getunleash.UnleashContext;
 import org.unleash.features.annotation.Toggle;
@@ -74,9 +75,19 @@ public interface FeatureDemoService {
     String getDemoString(String name, UnleashContext context);
 }
 ```
+- If `contextPath` in `Toggle` is set to THREADLOCAL
+```java
+import io.getunleash.UnleashContext;
+import org.unleash.features.annotation.Toggle;
+
+public interface FeatureDemoService {
+    @Toggle(name="demo-toggle", alterBean="featureNewService")
+    String getDemoString(String name);
+}
+```
 `UnleashContext context` is only required if a custom strategy is to be used. `FeatureDemoService` 
 is injected where required.
-
+- If `contextPath` in `Toggle` is set to METHOD
 ```java
 @RestController
 @RequestMapping("/feature")
@@ -88,7 +99,24 @@ public class FeatureDemoController {
     }
     
     @GetMapping
-    public String feature(final String name) {
+    public String feature(@RequestMapping final String name) {
+        return featureDemoService.getDemoString(name);
+    }
+}
+```
+- If `contextPath` in `Toggle` is set to THREADLOCAL
+```java
+@RestController
+@RequestMapping("/feature")
+public class FeatureDemoController {
+    private final FeatureDemoService featureDemoService;
+    
+    public FeatureDemoController(@Qualifier("featureOldService") final FeatureDemoService featureDemoService) {
+        this.featureDemoService = featureDemoService;
+    }
+    
+    @GetMapping
+    public String feature(@RequestMapping @Context(name = "name") final String name) {
         return featureDemoService.getDemoString(name);
     }
 }
