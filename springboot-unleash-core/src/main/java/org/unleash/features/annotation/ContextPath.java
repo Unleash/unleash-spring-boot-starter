@@ -1,5 +1,5 @@
 package org.unleash.features.annotation;
 
 public enum ContextPath {
-    METHOD
+    METHOD, THREADLOCAL
 }

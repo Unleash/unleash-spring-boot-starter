@@ -4,6 +4,7 @@ import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.unleash.features.annotation.ContextPath;
 import org.unleash.features.annotation.Toggle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Component("feature.advisor")
 public class FeatureAdvisor implements MethodInterceptor {
@@ -71,11 +73,18 @@ public class FeatureAdvisor implements MethodInterceptor {
 
     private boolean check(Toggle toggle, MethodInvocation mi) {
         final var featureId = toggle.name();
-        final var arguments = mi.getArguments();
-        final var contextOpt = Arrays.stream(arguments)
-                .filter(a -> a instanceof UnleashContext)
-                .map(a -> (UnleashContext) a)
-                .findFirst();
+        final Optional<UnleashContext> contextOpt;
+
+        if(toggle.contextPath() == ContextPath.METHOD) {
+            final var arguments = mi.getArguments();
+
+            contextOpt = Arrays.stream(arguments)
+                    .filter(a -> a instanceof UnleashContext)
+                    .map(a -> (UnleashContext) a)
+                    .findFirst();
+        } else {
+            contextOpt = Optional.ofNullable(UnleashContextThreadLocal.get());
+        }
 
         return contextOpt
                 .map(context -> unleash.isEnabled(featureId, context))
