@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.unleash.features.annotation.Context;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 
 @Aspect
 public class UnleashContextAspect {
