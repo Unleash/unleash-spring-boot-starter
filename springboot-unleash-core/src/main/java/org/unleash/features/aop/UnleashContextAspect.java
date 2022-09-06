@@ -1,6 +1,5 @@
 package org.unleash.features.aop;
 
-import io.getunleash.UnleashContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -21,14 +20,12 @@ public class UnleashContextAspect {
             final Class<?>[] parameterTypes = signature.getMethod().getParameterTypes();
             final Object[] params = pjp.getArgs();
             final Annotation[][] annotations;
-            final UnleashContext.Builder contextBuilder = UnleashContext.builder();
-            final UnleashContext unleashContext;
 
             annotations = pjp.getTarget().getClass().getMethod(methodName, parameterTypes).getParameterAnnotations();
 
             IntStream.range(0, params.length)
                     .forEach(index -> Arrays.stream(annotations[index])
-                            .forEach(annotation -> setUnleashContext(parameterTypes, params, contextBuilder, index, annotation)));
+                            .forEach(annotation -> setUnleashContext(parameterTypes, params, index, annotation)));
 
             return pjp.proceed();
         } finally {
@@ -38,7 +35,6 @@ public class UnleashContextAspect {
 
     private void setUnleashContext(final Class<?>[] parameterTypes,
                                    final Object[] params,
-                                   final UnleashContext.Builder contextBuilder,
                                    final int index,
                                    final Annotation annotation) {
 

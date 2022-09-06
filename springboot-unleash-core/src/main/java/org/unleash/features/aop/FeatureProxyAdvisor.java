@@ -1,23 +1,25 @@
 package org.unleash.features.aop;
 
-import org.unleash.features.annotation.Toggle;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.unleash.features.annotation.Toggle;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("MissingSerialAnnotation")
 @Component("feature.autoproxy")
 public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
     /** Serial number. */
     private static final long serialVersionUID = -364406999854610869L;
 
     /** Cache to avoid two-passes on same interfaces. */
-    private final Map<String, Boolean> processedInterface = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> processedInterface = new HashMap<>();
 
 
     /**
@@ -39,11 +41,12 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
-    protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, TargetSource targetSource) {
-        // Do not used any AOP here as still working with classes and not objects
+    protected Object[] getAdvicesAndAdvisorsForBean(final Class<?> beanClass, @NotNull final String beanName, final TargetSource targetSource) {
+        // Do not use any AOP here as still working with classes and not objects
         if (!beanClass.isInterface()) {
-            Class<?>[] interfaces;
+            final Class<?>[] interfaces;
             if (ClassUtils.isCglibProxyClass(beanClass)) {
                 interfaces = beanClass.getSuperclass().getInterfaces();
             } else {
@@ -51,7 +54,7 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
             }
             if (interfaces != null) {
                 for (Class<?> currentInterface: interfaces) {
-                    Object[] r = scanInterface(currentInterface);
+                    final Object[] r = scanInterface(currentInterface);
                     if (r != null) {
                         return r;
                     }
@@ -66,10 +69,11 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
      *
      * @param currentInterface
      *          class to be scanned
-     * @return
+     * @return list of proxies
      */
-    private Object[] scanInterface(Class<?> currentInterface) {
-        String currentInterfaceName = currentInterface.getCanonicalName();
+    private Object[] scanInterface(final Class<?> currentInterface) {
+        final String currentInterfaceName = currentInterface.getCanonicalName();
+        final Boolean isInterfaceFlipped;
         // Do not scan internals
         if (isJdkInterface(currentInterfaceName)) {
             return null;
@@ -79,21 +83,21 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
             return scanInterfaceForAnnotation(currentInterface, currentInterfaceName);
         }
         // Already scanned and flipped do not add interceptors
-        Boolean isInterfaceFlipped = processedInterface.get(currentInterfaceName);
+        isInterfaceFlipped = processedInterface.get(currentInterfaceName);
         return isInterfaceFlipped ? PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS : null;
     }
 
     /**
      * Avoid JDK classes.
      *
-     * @param currentInterfaceName
-     * @return
+     * @param currentInterfaceName Interface name. Checks if the interface is a JDK Dynamic Proxy
+     * @return check result
      */
-    private boolean isJdkInterface(String currentInterfaceName) {
+    private boolean isJdkInterface(final String currentInterfaceName) {
         return currentInterfaceName.startsWith("java.");
     }
 
-    private Object[] scanInterfaceForAnnotation(Class<?> currentInterface, String currentInterfaceName) {
+    private Object[] scanInterfaceForAnnotation(final Class<?> currentInterface, final String currentInterfaceName) {
         // Interface never scan
         if (AnnotatedElementUtils.hasAnnotation(currentInterface, Toggle.class)) {
             processedInterface.put(currentInterfaceName, true);
@@ -101,7 +105,7 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
 
         } else {
             // not found on bean, check methods
-            for (Method method : currentInterface.getDeclaredMethods()) {
+            for (final Method method : currentInterface.getDeclaredMethods()) {
                 if (AnnotatedElementUtils.hasAnnotation(method, Toggle.class)) {
                     processedInterface.put(currentInterfaceName, true);
                     return PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS;

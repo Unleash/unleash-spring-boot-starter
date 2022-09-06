@@ -4,8 +4,7 @@ import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.unleash.features.annotation.ContextPath;
-import org.unleash.features.annotation.Toggle;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.unleash.features.annotation.ContextPath;
+import org.unleash.features.annotation.Toggle;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,17 +24,18 @@ import java.util.Optional;
 
 @Component("feature.advisor")
 public class FeatureAdvisor implements MethodInterceptor {
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureAdvisor.class);
     private final Unleash unleash;
     private final ApplicationContext applicationContext;
 
-    public FeatureAdvisor(Unleash unleash, ApplicationContext applicationContext) {
+    public FeatureAdvisor(final Unleash unleash, final ApplicationContext applicationContext) {
         this.unleash = unleash;
         this.applicationContext = applicationContext;
     }
 
     @Override
-    public Object invoke(final MethodInvocation mi) throws Throwable {
+    public Object invoke(@NotNull final MethodInvocation mi) throws Throwable {
         final Toggle toggle = getToggleAnnotation(mi);
 
         if(toggle != null) {
@@ -59,7 +61,7 @@ public class FeatureAdvisor implements MethodInterceptor {
         return mi.proceed();
     }
 
-    private Object invokeAlterBean(MethodInvocation mi, String alterBeanName) {
+    private Object invokeAlterBean(final MethodInvocation mi, final String alterBeanName) {
         final Method method = mi.getMethod();
 
         try {
@@ -71,7 +73,8 @@ public class FeatureAdvisor implements MethodInterceptor {
         }
     }
 
-    private boolean check(Toggle toggle, MethodInvocation mi) {
+    @SuppressWarnings("ConstantConditions")
+    private boolean check(final Toggle toggle, final MethodInvocation mi) {
         final var featureId = toggle.name();
         final Optional<UnleashContext> contextOpt;
 
@@ -123,14 +126,14 @@ public class FeatureAdvisor implements MethodInterceptor {
                     return beanName;
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
         throw new IllegalArgumentException("Cannot read behind proxy target");
     }
 
-    private Toggle getToggleAnnotation(MethodInvocation mi) {
+    private Toggle getToggleAnnotation(final MethodInvocation mi) {
         final Method method = mi.getMethod();
         final Class<?> currentInterface;
         final Class<?> currentImplementation;

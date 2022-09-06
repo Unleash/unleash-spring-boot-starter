@@ -12,10 +12,11 @@ public class UnleashContextThreadLocal {
         final String previousValue = UNLEASH_CONTEXT_BUILDER_THREAD_LOCAL.get().putIfAbsent(name, value);
 
         if(previousValue != null) {
-            throw new IllegalArgumentException("Context name " + name + " already used");
+            throw new IllegalArgumentException(String.format("Context name %s already used", name));
         }
     }
 
+    @SuppressWarnings("EnhancedSwitchMigration")
     public static UnleashContext get() {
         final Map<String, String> contextMap = UNLEASH_CONTEXT_BUILDER_THREAD_LOCAL.get();
         final UnleashContext.Builder builder = UnleashContext.builder();
