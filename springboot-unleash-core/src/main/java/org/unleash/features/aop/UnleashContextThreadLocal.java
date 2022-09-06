@@ -21,7 +21,27 @@ public class UnleashContextThreadLocal {
         final UnleashContext.Builder builder = UnleashContext.builder();
 
         if(!contextMap.isEmpty()) {
-            contextMap.forEach(builder::addProperty);
+            contextMap.forEach((name, value) -> {
+                switch (name) {
+                    case "environment":
+                        builder.environment(value);
+                        break;
+                    case "appName":
+                        builder.appName(value);
+                        break;
+                    case "userId":
+                        builder.userId(value);
+                        break;
+                    case "sessionId":
+                        builder.sessionId(value);
+                        break;
+                    case "remoteAddress":
+                        builder.remoteAddress(value);
+                        break;
+                    default:
+                        builder.addProperty(name, value);
+                }
+            });
         }
 
         return builder.build();
