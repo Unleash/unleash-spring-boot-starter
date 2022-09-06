@@ -5,16 +5,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.unleash.features.annotation.Context;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 @Aspect
 public class UnleashContextAspect {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnleashContextAspect.class);
-
     @Around("execution(public * *(.., @org.unleash.features.annotation.Context (*), ..))")
     public Object aroundContextAnnotation(final ProceedingJoinPoint pjp) throws Throwable {
         try {
@@ -28,31 +26,38 @@ public class UnleashContextAspect {
 
             annotations = pjp.getTarget().getClass().getMethod(methodName, parameterTypes).getParameterAnnotations();
 
-            int i = 0;
-
-            for (final Object arg : params) {
-                for (final Annotation annotation : annotations[i]) {
-                    if (annotation.annotationType() == Context.class) {
-                        final Context contextAnnotation = (Context) annotation;
-
-                        if (arg != null) {
-                            if (parameterTypes[i] != String.class) {
-                                throw new IllegalArgumentException("Only string params can be annotated with Context annotation");
-                            }
-
-                            contextBuilder.addProperty(contextAnnotation.name(), (String) arg);
-                        }
-                    }
-                }
-                i++;
-            }
+            IntStream.range(0, params.length)
+                    .forEach(index -> Arrays.stream(annotations[index])
+                            .forEach(annotation -> setUnleashContext(parameterTypes, params, contextBuilder, index, annotation)));
 
             unleashContext = contextBuilder.build();
 
             UnleashContextThreadLocal.set(unleashContext);
+
             return pjp.proceed();
         } finally {
             UnleashContextThreadLocal.unset();
+        }
+    }
+
+    private void setUnleashContext(final Class<?>[] parameterTypes,
+                                   final Object[] params,
+                                   final UnleashContext.Builder contextBuilder,
+                                   final int index,
+                                   final Annotation annotation) {
+
+        if (annotation.annotationType() == Context.class) {
+            final Object arg = params[index];
+            final Class<?> parameterType = parameterTypes[index];
+            final Context contextAnnotation = (Context) annotation;
+
+            if (arg != null) {
+                if (parameterType != String.class) {
+                    throw new IllegalArgumentException("Only string params can be annotated with Context annotation");
+                }
+
+                contextBuilder.addProperty(contextAnnotation.name(), (String) arg);
+            }
         }
     }
 }
