@@ -8,5 +8,4 @@ import java.lang.annotation.*;
 public @interface Toggle {
     String name() default "";
     String alterBean() default "";
-    ContextPath contextPath() default ContextPath.METHOD;
 }
