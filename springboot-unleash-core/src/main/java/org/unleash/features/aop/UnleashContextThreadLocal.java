@@ -21,33 +21,14 @@ public class UnleashContextThreadLocal {
         final UnleashContext.Builder builder = UnleashContext.builder();
 
         if(!contextMap.isEmpty()) {
-            contextMap.forEach((name, value) -> setContextBuilderProperty(builder, name, value));
+            contextMap.forEach((name, value) -> Utils.setContextBuilderProperty(builder, name, value));
         }
 
         return builder.build();
     }
 
-    @SuppressWarnings("EnhancedSwitchMigration")
-    private static void setContextBuilderProperty(final UnleashContext.Builder builder, final String name, final String value) {
-        switch (name) {
-            case "environment":
-                builder.environment(value);
-                break;
-            case "appName":
-                builder.appName(value);
-                break;
-            case "userId":
-                builder.userId(value);
-                break;
-            case "sessionId":
-                builder.sessionId(value);
-                break;
-            case "remoteAddress":
-                builder.remoteAddress(value);
-                break;
-            default:
-                builder.addProperty(name, value);
-        }
+    public static Map<String, String> getContextMap() {
+        return UNLEASH_CONTEXT_BUILDER_THREAD_LOCAL.get();
     }
 
     public static void unset() {

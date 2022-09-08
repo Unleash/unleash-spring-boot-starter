@@ -73,7 +73,6 @@ public class FeatureAdvisor implements MethodInterceptor {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private boolean check(final Toggle toggle, final MethodInvocation mi) {
         final var featureId = toggle.name();
         final Optional<UnleashContext> contextOpt;
@@ -86,7 +85,7 @@ public class FeatureAdvisor implements MethodInterceptor {
                     .map(a -> (UnleashContext) a)
                     .findFirst();
         } else {
-            contextOpt = Optional.ofNullable(UnleashContextThreadLocal.get());
+            contextOpt = Optional.empty();
         }
 
         return contextOpt
