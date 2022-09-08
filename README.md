@@ -85,8 +85,7 @@ public interface FeatureDemoService {
     String getDemoString(String name);
 }
 ```
-`UnleashContext context` is only required if a custom strategy is to be used. `FeatureDemoService` 
-is injected where required.
+`FeatureDemoService` is injected where required.
 - If `contextPath` in `Toggle` is set to METHOD
 ```java
 import io.getunleash.UnleashContext;
