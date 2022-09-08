@@ -39,6 +39,27 @@ io:
 - The configuration takes care of creating configuring `UnleashConfig` and creating an instance of `io.getunleash.Unleash`.
 - This takes care of binding all strategy instances (in-built and custom) to the `Unleash` instance.
 
+### Including Spring Security Details in the Unleash Context
+Provide an `UnleashContextProvider` bean to add details that Unleash can leverage when evaluating toggle strategies:
+```java
+@Bean
+@ConditionalOnMissingBean
+public UnleashContextProvider unleashContextProvider(final UnleashProperties unleashProperties) {
+    return () -> {
+        UnleashContext.Builder builder = UnleashContext.builder();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            builder.userId((((User)principal).getUsername());
+        }
+        
+        return builder
+            .appName(unleashProperties.getAppName())
+            .environment(unleashProperties.getEnvironment())
+            .build();
+    };
+}
+```
+
 ### Usage
 - Create a feature toggle `demo-toggle` on unleash server and enabled it.
 - Create an interface FeatureDemoService and 2 implementation

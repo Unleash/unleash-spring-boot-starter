@@ -2,10 +2,13 @@ package org.unleash.features.config;
 
 import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
+import io.getunleash.UnleashContext;
+import io.getunleash.UnleashContextProvider;
 import io.getunleash.repository.OkHttpFeatureFetcher;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,9 +33,19 @@ public class UnleashAutoConfiguration {
             UnleashAutoConfiguration::setHttpFetcherInBuilder;
 
     @Bean
-    public Unleash unleash(final UnleashProperties unleashProperties) {
+    @ConditionalOnMissingBean
+    public UnleashContextProvider unleashContextProvider(final UnleashProperties unleashProperties) {
+        return () -> UnleashContext.builder()
+                .appName(unleashProperties.getAppName())
+                .environment(unleashProperties.getEnvironment())
+                .build();
+    }
+
+    @Bean
+    public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider) {
         final UnleashConfig unleashConfig = httpFetcherFunc.apply(UnleashConfig
                         .builder()
+                        .unleashContextProvider(unleashContextProvider)
                         .appName(unleashProperties.getAppName())
                         .environment(unleashProperties.getEnvironment())
                         .unleashAPI(unleashProperties.getApiUrl())
