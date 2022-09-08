@@ -29,10 +29,10 @@ public class ContextProxyAdvisor extends AbstractAutoProxyCreator {
             final boolean isAnnotatedWithContext = Arrays.stream(methods).anyMatch(this::hasAnnotation);
 
             if(isAnnotatedWithContext) {
-                return new Object[0];
+                return PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS;
             }
         }
-        return null;
+        return DO_NOT_PROXY;
     }
 
     private boolean hasAnnotation(final Method method) {
