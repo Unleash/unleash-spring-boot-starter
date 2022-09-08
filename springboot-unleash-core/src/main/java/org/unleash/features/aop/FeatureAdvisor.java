@@ -73,21 +73,16 @@ public class FeatureAdvisor implements MethodInterceptor {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private boolean check(final Toggle toggle, final MethodInvocation mi) {
         final var featureId = toggle.name();
         final Optional<UnleashContext> contextOpt;
+        final var arguments = mi.getArguments();
 
-        if(toggle.contextPath() == ContextPath.METHOD) {
-            final var arguments = mi.getArguments();
-
-            contextOpt = Arrays.stream(arguments)
-                    .filter(a -> a instanceof UnleashContext)
-                    .map(a -> (UnleashContext) a)
-                    .findFirst();
-        } else {
-            contextOpt = Optional.ofNullable(UnleashContextThreadLocal.get());
-        }
+        //If UnleashContext is explicitly passed as a parameter, it takes precedence over the annotation.
+        contextOpt = Arrays.stream(arguments)
+                .filter(a -> a instanceof UnleashContext)
+                .map(a -> (UnleashContext) a)
+                .findFirst();
 
         return contextOpt
                 .map(context -> unleash.isEnabled(featureId, context))
