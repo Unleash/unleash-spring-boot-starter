@@ -86,7 +86,7 @@ public class FeatureDemoNewServiceImpl implements FeatureDemoService {
 ```
 - The requirement is that if the feature is enabled on the server, the new service implementation is used.
 - To get the above functionality add the `@Toggle` annotation to the interface,
-- If `contextPath` in `Toggle` is set to METHOD
+- If `Context` annotation is not used and UnleashContext is explicitly passed as a method parameter
 ```java
 import io.getunleash.UnleashContext;
 import org.unleash.features.annotation.Toggle;
@@ -96,7 +96,7 @@ public interface FeatureDemoService {
     String getDemoString(String name, UnleashContext context);
 }
 ```
-- If `contextPath` in `Toggle` is set to THREADLOCAL
+- If `@Context` annotation is used to set UnleashContext
 ```java
 import io.getunleash.UnleashContext;
 import org.unleash.features.annotation.Toggle;
@@ -107,7 +107,7 @@ public interface FeatureDemoService {
 }
 ```
 `FeatureDemoService` is injected where required.
-- If `contextPath` in `Toggle` is set to METHOD
+- If `Context` annotation is not used and UnleashContext is explicitly passed as a method parameter
 ```java
 import io.getunleash.UnleashContext;
 import org.unleash.features.annotation.Toggle;
@@ -133,13 +133,13 @@ public class FeatureDemoController {
     }
 }
 ```
-- If `contextPath` in `Toggle` is set to THREADLOCAL
+- If `@Context` annotation is used to set UnleashContext
 ```java
 import io.getunleash.UnleashContext;
 import org.unleash.features.annotation.Toggle;
 
 public interface FeatureDemoService {
-    @Toggle(name="demo-toggle", alterBean="featureNewService", contextPath=ContextPath.THREADLOCAL)
+    @Toggle(name="demo-toggle", alterBean="featureNewService")
     String getDemoString(String name);
 }
 ```
