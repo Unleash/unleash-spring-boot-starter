@@ -1,8 +1,6 @@
 package org.unleash.features.aop;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -17,7 +15,6 @@ import java.util.Map;
 @SuppressWarnings("MissingSerialAnnotation")
 @Component("feature.autoproxy")
 public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FeatureProxyAdvisor.class);
     /** Serial number. */
     private static final long serialVersionUID = -364406999854610869L;
 
