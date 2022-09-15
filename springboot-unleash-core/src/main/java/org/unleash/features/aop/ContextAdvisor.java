@@ -14,15 +14,19 @@ import java.util.stream.IntStream;
 public class ContextAdvisor implements MethodInterceptor {
     @Override
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-        final var params = invocation.getArguments();
-        final var annotations = invocation.getMethod().getParameterAnnotations();
-        final Class<?>[] parameterTypes = invocation.getMethod().getParameterTypes();
+        try {
+            final var params = invocation.getArguments();
+            final var annotations = invocation.getMethod().getParameterAnnotations();
+            final Class<?>[] parameterTypes = invocation.getMethod().getParameterTypes();
 
-        IntStream.range(0, params.length)
-                .forEach(index -> Arrays.stream(annotations[index])
-                        .forEach(annotation -> setUnleashContext(parameterTypes, params, index, annotation)));
+            IntStream.range(0, params.length)
+                    .forEach(index -> Arrays.stream(annotations[index])
+                            .forEach(annotation -> setUnleashContext(parameterTypes, params, index, annotation)));
 
-        return invocation.proceed();
+            return invocation.proceed();
+        } finally {
+            UnleashContextThreadLocal.unset();
+        }
     }
 
     private void setUnleashContext(final Class<?>[] parameterTypes,
