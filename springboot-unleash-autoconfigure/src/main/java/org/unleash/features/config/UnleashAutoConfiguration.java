@@ -36,6 +36,8 @@ public class UnleashAutoConfiguration {
 
     private final BiFunction<UnleashConfig.Builder, UnleashProperties.HttpFetcher, UnleashConfig.Builder> httpFetcherFunc =
             UnleashAutoConfiguration::setHttpFetcherInBuilder;
+    private final BiFunction<UnleashConfig.Builder, UnleashProperties, UnleashConfig.Builder> disableMetricsFunc =
+            (builder, properties) -> properties.isDisableMetrics() ? builder.disableMetrics() : builder;
 
     @Bean
     @ConditionalOnMissingBean
@@ -49,15 +51,24 @@ public class UnleashAutoConfiguration {
     @Bean
     public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider) {
         final UnleashContextProvider provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
-        final UnleashConfig unleashConfig = httpFetcherFunc.apply(UnleashConfig
-                        .builder()
-                        .unleashContextProvider(provider)
-                        .appName(unleashProperties.getAppName())
-                        .environment(unleashProperties.getEnvironment())
-                        .unleashAPI(unleashProperties.getApiUrl())
-                        .customHttpHeader("Authorization", unleashProperties.getApiToken())
-                        .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
-                                UUID.randomUUID().toString()), unleashProperties.getHttpFetcher())
+        final UnleashConfig unleashConfig = disableMetricsFunc
+                .apply(httpFetcherFunc
+                        .apply(UnleashConfig
+                                .builder()
+                                .unleashContextProvider(provider)
+                                .appName(unleashProperties.getAppName())
+                                .environment(unleashProperties.getEnvironment())
+                                .unleashAPI(unleashProperties.getApiUrl())
+                                .fetchTogglesConnectTimeout(unleashProperties.getFetchTogglesConnectTimeout())
+                                .fetchTogglesReadTimeout(unleashProperties.getFetchTogglesReadTimeout())
+                                .fetchTogglesInterval(unleashProperties.getFetchTogglesInterval().getSeconds())
+                                .sendMetricsInterval(unleashProperties.getSendMetricsInterval().getSeconds())
+                                .sendMetricsConnectTimeout(unleashProperties.getSendMetricsConnectTimeout())
+                                .sendMetricsReadTimeout(unleashProperties.getSendMetricsReadTimeout())
+                                .customHttpHeader("Authorization", unleashProperties.getApiToken())
+                                .projectName(unleashProperties.getProjectName())
+                                .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
+                                        UUID.randomUUID().toString()), unleashProperties.getHttpFetcher()), unleashProperties)
                 .build();
 
         return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(unleashConfig, strategyMap.values().toArray(new Strategy[0])) :
@@ -73,7 +84,7 @@ public class UnleashAutoConfiguration {
         return () -> {
             final Map<String, String> threadLocalContextMap = UnleashContextThreadLocal.getContextMap();
 
-            if(CollectionUtils.isEmpty(threadLocalContextMap)) {
+            if (CollectionUtils.isEmpty(threadLocalContextMap)) {
                 return unleashContextProvider.getContext();
             } else {
                 final var context = unleashContextProvider.getContext();

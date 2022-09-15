@@ -2,6 +2,8 @@ package org.unleash.features.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+
 import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
 
 @ConfigurationProperties(prefix = PREFIX)
@@ -11,7 +13,14 @@ public class UnleashProperties {
     private String environment;
     private String apiUrl;
     private String apiToken;
-
+    private String projectName;
+    private boolean disableMetrics = false;
+    private Duration fetchTogglesInterval = Duration.ofSeconds(10);
+    private Duration fetchTogglesConnectTimeout = Duration.ofSeconds(10);
+    private Duration fetchTogglesReadTimeout = Duration.ofSeconds(10);
+    private Duration sendMetricsInterval = Duration.ofSeconds(10);
+    private Duration sendMetricsConnectTimeout = Duration.ofSeconds(10);
+    private Duration sendMetricsReadTimeout = Duration.ofSeconds(10);
     private HttpFetcher httpFetcher = HttpFetcher.HTTP_URL_CONNECTION_FETCHER;
 
     public static final String PREFIX = "io.getunleash";
@@ -62,6 +71,70 @@ public class UnleashProperties {
 
     public void setHttpFetcher(HttpFetcher httpFetcher) {
         this.httpFetcher = httpFetcher;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public Duration getFetchTogglesInterval() {
+        return fetchTogglesInterval;
+    }
+
+    public void setFetchTogglesInterval(Duration fetchTogglesInterval) {
+        this.fetchTogglesInterval = fetchTogglesInterval;
+    }
+
+    public boolean isDisableMetrics() {
+        return disableMetrics;
+    }
+
+    public void setDisableMetrics(boolean disableMetrics) {
+        this.disableMetrics = disableMetrics;
+    }
+
+    public Duration getSendMetricsInterval() {
+        return sendMetricsInterval;
+    }
+
+    public void setSendMetricsInterval(Duration sendMetricsInterval) {
+        this.sendMetricsInterval = sendMetricsInterval;
+    }
+
+    public Duration getSendMetricsConnectTimeout() {
+        return sendMetricsConnectTimeout;
+    }
+
+    public void setSendMetricsConnectTimeout(Duration sendMetricsConnectTimeout) {
+        this.sendMetricsConnectTimeout = sendMetricsConnectTimeout;
+    }
+
+    public Duration getSendMetricsReadTimeout() {
+        return sendMetricsReadTimeout;
+    }
+
+    public void setSendMetricsReadTimeout(Duration sendMetricsReadTimeout) {
+        this.sendMetricsReadTimeout = sendMetricsReadTimeout;
+    }
+
+    public Duration getFetchTogglesConnectTimeout() {
+        return fetchTogglesConnectTimeout;
+    }
+
+    public void setFetchTogglesConnectTimeout(Duration fetchTogglesConnectTimeout) {
+        this.fetchTogglesConnectTimeout = fetchTogglesConnectTimeout;
+    }
+
+    public Duration getFetchTogglesReadTimeout() {
+        return fetchTogglesReadTimeout;
+    }
+
+    public void setFetchTogglesReadTimeout(Duration fetchTogglesReadTimeout) {
+        this.fetchTogglesReadTimeout = fetchTogglesReadTimeout;
     }
 
     public enum HttpFetcher {
