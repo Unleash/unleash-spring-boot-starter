@@ -3,6 +3,7 @@ package org.unleash.features.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
+import java.util.List;
 
 import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
 
@@ -23,8 +24,8 @@ public class UnleashProperties {
     private Duration sendMetricsReadTimeout = Duration.ofSeconds(10);
     private HttpFetcher httpFetcher = HttpFetcher.HTTP_URL_CONNECTION_FETCHER;
     private boolean synchronousFetchOnInitialisation = false;
-
     private boolean proxyAuthenticationByJvmProperties = false;
+    private List<CustomHeader> customHttpHeadersProvider;
 
     public static final String PREFIX = "io.getunleash";
 
@@ -156,8 +157,37 @@ public class UnleashProperties {
         this.proxyAuthenticationByJvmProperties = proxyAuthenticationByJvmProperties;
     }
 
+    public List<CustomHeader> getCustomHttpHeadersProvider() {
+        return customHttpHeadersProvider;
+    }
+
+    public void setCustomHttpHeadersProvider(final List<CustomHeader> customHttpHeadersProvider) {
+        this.customHttpHeadersProvider = customHttpHeadersProvider;
+    }
+
     public enum HttpFetcher {
         HTTP_URL_CONNECTION_FETCHER,
         OK_HTTP
+    }
+
+    public static final class CustomHeader {
+        private String name;
+        private String value;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }

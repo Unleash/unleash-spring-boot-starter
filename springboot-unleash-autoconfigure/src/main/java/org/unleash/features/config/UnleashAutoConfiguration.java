@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration
@@ -33,14 +33,6 @@ import java.util.function.BiFunction;
 public class UnleashAutoConfiguration {
     @Autowired(required = false)
     private Map<String, ? extends Strategy> strategyMap;
-
-    private final BiFunction<UnleashConfig.Builder, UnleashProperties.HttpFetcher, UnleashConfig.Builder> httpFetcherFunc =
-            UnleashAutoConfiguration::setHttpFetcherInBuilder;
-    private final BiFunction<UnleashConfig.Builder, UnleashProperties, UnleashConfig.Builder> disableMetricsFunc =
-            (builder, properties) -> properties.isDisableMetrics() ? builder.disableMetrics() : builder;
-
-    private final BiFunction<UnleashConfig.Builder, UnleashProperties, UnleashConfig.Builder> proxyAuthenticationByJvmPropsFunc =
-            (builder, properties) -> properties.isProxyAuthenticationByJvmProperties() ? builder.enableProxyAuthenticationByJvmProperties() : builder;
 
     @Bean
     @ConditionalOnMissingBean
@@ -53,7 +45,6 @@ public class UnleashAutoConfiguration {
 
     @Bean
     public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider) {
-        final UnleashConfig unleashConfig;
         final var provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
         final var builder = UnleashConfig
                 .builder()
@@ -73,21 +64,20 @@ public class UnleashAutoConfiguration {
                 .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
                         UUID.randomUUID().toString());
 
-        disableMetricsFunc.apply(builder, unleashProperties);
-        httpFetcherFunc.apply(builder, unleashProperties.getHttpFetcher());
-        proxyAuthenticationByJvmPropsFunc.apply(builder, unleashProperties);
+        setDisableMetrics(builder, unleashProperties);
+        setHttpFetcherInBuilder(builder, unleashProperties);
+        setProxyAuthenticationByJvmProps(builder, unleashProperties);
+        setCustomHeaderProvider(builder, unleashProperties);
 
-        unleashConfig = builder.build();
-
-        return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(unleashConfig, strategyMap.values().toArray(new Strategy[0])) :
-                new DefaultUnleash(unleashConfig);
+        return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(builder.build(), strategyMap.values().toArray(new Strategy[0])) :
+                new DefaultUnleash(builder.build());
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @NotNull
     /**
      * Method always wraps the created UnleashContextProvider with threadLocal support.
      */
+    @NotNull
+    @SuppressWarnings("ConstantConditions")
     private UnleashContextProvider getUnleashContextProviderWithThreadLocalSupport(UnleashContextProvider unleashContextProvider) {
         return () -> {
             final Map<String, String> threadLocalContextMap = UnleashContextThreadLocal.getContextMap();
@@ -114,11 +104,29 @@ public class UnleashAutoConfiguration {
         };
     }
 
-    private static UnleashConfig.Builder setHttpFetcherInBuilder(UnleashConfig.Builder builder, UnleashProperties.HttpFetcher fetcher) {
-        if (fetcher == UnleashProperties.HttpFetcher.HTTP_URL_CONNECTION_FETCHER) {
+    @SuppressWarnings("UnusedReturnValue")
+    private UnleashConfig.Builder setHttpFetcherInBuilder(UnleashConfig.Builder builder, UnleashProperties unleashProperties) {
+        if (unleashProperties.getHttpFetcher() == UnleashProperties.HttpFetcher.HTTP_URL_CONNECTION_FETCHER) {
             return builder;
         } else {
             return builder.unleashFeatureFetcherFactory(OkHttpFeatureFetcher::new);
         }
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    private UnleashConfig.Builder setProxyAuthenticationByJvmProps(UnleashConfig.Builder builder, UnleashProperties properties) {
+        return properties.isProxyAuthenticationByJvmProperties() ? builder.enableProxyAuthenticationByJvmProperties() : builder;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    private UnleashConfig.Builder setCustomHeaderProvider(UnleashConfig.Builder builder, UnleashProperties properties) {
+        return !CollectionUtils.isEmpty(properties.getCustomHttpHeadersProvider()) ?
+                builder.customHttpHeadersProvider(() -> properties.getCustomHttpHeadersProvider().stream()
+                        .collect(Collectors.toMap(UnleashProperties.CustomHeader::getName, UnleashProperties.CustomHeader::getValue))) : builder;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    private UnleashConfig.Builder setDisableMetrics(UnleashConfig.Builder builder, UnleashProperties properties) {
+        return properties.isDisableMetrics() ? builder.disableMetrics() : builder;
     }
 }
