@@ -22,6 +22,9 @@ public class UnleashProperties {
     private Duration sendMetricsConnectTimeout = Duration.ofSeconds(10);
     private Duration sendMetricsReadTimeout = Duration.ofSeconds(10);
     private HttpFetcher httpFetcher = HttpFetcher.HTTP_URL_CONNECTION_FETCHER;
+    private boolean synchronousFetchOnInitialisation = false;
+
+    private boolean proxyAuthenticationByJvmProperties = false;
 
     public static final String PREFIX = "io.getunleash";
 
@@ -135,6 +138,22 @@ public class UnleashProperties {
 
     public void setFetchTogglesReadTimeout(Duration fetchTogglesReadTimeout) {
         this.fetchTogglesReadTimeout = fetchTogglesReadTimeout;
+    }
+
+    public boolean isSynchronousFetchOnInitialisation() {
+        return synchronousFetchOnInitialisation;
+    }
+
+    public void setSynchronousFetchOnInitialisation(boolean synchronousFetchOnInitialisation) {
+        this.synchronousFetchOnInitialisation = synchronousFetchOnInitialisation;
+    }
+
+    public boolean isProxyAuthenticationByJvmProperties() {
+        return proxyAuthenticationByJvmProperties;
+    }
+
+    public void setProxyAuthenticationByJvmProperties(boolean proxyAuthenticationByJvmProperties) {
+        this.proxyAuthenticationByJvmProperties = proxyAuthenticationByJvmProperties;
     }
 
     public enum HttpFetcher {

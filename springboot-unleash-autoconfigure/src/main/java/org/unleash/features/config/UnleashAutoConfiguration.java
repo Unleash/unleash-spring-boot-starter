@@ -39,6 +39,9 @@ public class UnleashAutoConfiguration {
     private final BiFunction<UnleashConfig.Builder, UnleashProperties, UnleashConfig.Builder> disableMetricsFunc =
             (builder, properties) -> properties.isDisableMetrics() ? builder.disableMetrics() : builder;
 
+    private final BiFunction<UnleashConfig.Builder, UnleashProperties, UnleashConfig.Builder> proxyAuthenticationByJvmPropsFunc =
+            (builder, properties) -> properties.isProxyAuthenticationByJvmProperties() ? builder.enableProxyAuthenticationByJvmProperties() : builder;
+
     @Bean
     @ConditionalOnMissingBean
     public UnleashContextProvider unleashContextProvider(final UnleashProperties unleashProperties) {
@@ -50,26 +53,31 @@ public class UnleashAutoConfiguration {
 
     @Bean
     public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider) {
-        final UnleashContextProvider provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
-        final UnleashConfig unleashConfig = disableMetricsFunc
-                .apply(httpFetcherFunc
-                        .apply(UnleashConfig
-                                .builder()
-                                .unleashContextProvider(provider)
-                                .appName(unleashProperties.getAppName())
-                                .environment(unleashProperties.getEnvironment())
-                                .unleashAPI(unleashProperties.getApiUrl())
-                                .fetchTogglesConnectTimeout(unleashProperties.getFetchTogglesConnectTimeout())
-                                .fetchTogglesReadTimeout(unleashProperties.getFetchTogglesReadTimeout())
-                                .fetchTogglesInterval(unleashProperties.getFetchTogglesInterval().getSeconds())
-                                .sendMetricsInterval(unleashProperties.getSendMetricsInterval().getSeconds())
-                                .sendMetricsConnectTimeout(unleashProperties.getSendMetricsConnectTimeout())
-                                .sendMetricsReadTimeout(unleashProperties.getSendMetricsReadTimeout())
-                                .customHttpHeader("Authorization", unleashProperties.getApiToken())
-                                .projectName(unleashProperties.getProjectName())
-                                .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
-                                        UUID.randomUUID().toString()), unleashProperties.getHttpFetcher()), unleashProperties)
-                .build();
+        final UnleashConfig unleashConfig;
+        final var provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
+        final var builder = UnleashConfig
+                .builder()
+                .unleashContextProvider(provider)
+                .appName(unleashProperties.getAppName())
+                .environment(unleashProperties.getEnvironment())
+                .unleashAPI(unleashProperties.getApiUrl())
+                .fetchTogglesConnectTimeout(unleashProperties.getFetchTogglesConnectTimeout())
+                .fetchTogglesReadTimeout(unleashProperties.getFetchTogglesReadTimeout())
+                .fetchTogglesInterval(unleashProperties.getFetchTogglesInterval().getSeconds())
+                .sendMetricsInterval(unleashProperties.getSendMetricsInterval().getSeconds())
+                .sendMetricsConnectTimeout(unleashProperties.getSendMetricsConnectTimeout())
+                .sendMetricsReadTimeout(unleashProperties.getSendMetricsReadTimeout())
+                .customHttpHeader("Authorization", unleashProperties.getApiToken())
+                .projectName(unleashProperties.getProjectName())
+                .synchronousFetchOnInitialisation(unleashProperties.isSynchronousFetchOnInitialisation())
+                .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
+                        UUID.randomUUID().toString());
+
+        disableMetricsFunc.apply(builder, unleashProperties);
+        httpFetcherFunc.apply(builder, unleashProperties.getHttpFetcher());
+        proxyAuthenticationByJvmPropsFunc.apply(builder, unleashProperties);
+
+        unleashConfig = builder.build();
 
         return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(unleashConfig, strategyMap.values().toArray(new Strategy[0])) :
                 new DefaultUnleash(unleashConfig);
