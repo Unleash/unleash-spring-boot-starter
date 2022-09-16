@@ -15,6 +15,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.unleash.features.UnleashContextPreProcessor;
 import org.unleash.features.annotation.Toggle;
@@ -86,8 +87,10 @@ public class FeatureAdvisor implements MethodInterceptor {
     private Object invokePreProcessors(final Supplier<Object> supplier) {
         Supplier<Object> returnValue = supplier;
 
-        for (final UnleashContextPreProcessor contextPreProcessor : contextPreProcessors) {
-            returnValue = contextPreProcessor.preProcess(supplier);
+        if(!CollectionUtils.isEmpty(contextPreProcessors)) {
+            for (final UnleashContextPreProcessor contextPreProcessor : contextPreProcessors) {
+                returnValue = contextPreProcessor.preProcess(supplier);
+            }
         }
 
         return returnValue.get();
