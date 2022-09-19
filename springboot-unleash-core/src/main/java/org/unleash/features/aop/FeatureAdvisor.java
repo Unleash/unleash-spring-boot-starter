@@ -9,18 +9,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.unleash.features.annotation.ContextPath;
+import org.unleash.features.UnleashContextPreProcessor;
 import org.unleash.features.annotation.Toggle;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Component("feature.advisor")
 public class FeatureAdvisor implements MethodInterceptor {
@@ -28,6 +32,10 @@ public class FeatureAdvisor implements MethodInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureAdvisor.class);
     private final Unleash unleash;
     private final ApplicationContext applicationContext;
+
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Autowired(required = false)
+    private List<UnleashContextPreProcessor> contextPreProcessors;
 
     public FeatureAdvisor(final Unleash unleash, final ApplicationContext applicationContext) {
         this.unleash = unleash;
@@ -41,24 +49,51 @@ public class FeatureAdvisor implements MethodInterceptor {
         if(toggle != null) {
             final String alterBean = toggle.alterBean();
             final boolean usingAlterBean = StringUtils.hasText(alterBean);
-            final boolean isFeatureToggled;
 
             if(alterBean.equals(getExecutedBeanName(mi))) {
-                return mi.proceed();
+                return invokePreProcessors(() -> invokeMethodInvocation(mi));
             }
 
-            isFeatureToggled = check(toggle, mi);
-
-            if(isFeatureToggled) {
-                if(usingAlterBean) {
-                    return invokeAlterBean(mi, alterBean);
-                } else {
-                    throw new IllegalArgumentException("alterClass not yet supported");
-                }
-            }
+            return invokePreProcessors(() -> checkForFeatureToggle(mi, toggle, alterBean, usingAlterBean));
         }
 
         return mi.proceed();
+    }
+
+    private Object checkForFeatureToggle(@NotNull MethodInvocation mi, Toggle toggle, String alterBean, boolean usingAlterBean) {
+        final boolean isFeatureToggled = check(toggle, mi);
+
+        if(isFeatureToggled) {
+            if(usingAlterBean) {
+                return invokeAlterBean(mi, alterBean);
+            } else {
+                throw new IllegalArgumentException("alterClass not yet supported");
+            }
+        } else {
+            return invokeMethodInvocation(mi);
+        }
+    }
+
+    private Object invokeMethodInvocation(final MethodInvocation methodInvocation) {
+        try {
+            return methodInvocation.proceed();
+        } catch (final RuntimeException ex) {
+            throw ex;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object invokePreProcessors(final Supplier<Object> supplier) {
+        Supplier<Object> returnValue = supplier;
+
+        if(!CollectionUtils.isEmpty(contextPreProcessors)) {
+            for (final UnleashContextPreProcessor contextPreProcessor : contextPreProcessors) {
+                returnValue = contextPreProcessor.preProcess(supplier);
+            }
+        }
+
+        return returnValue.get();
     }
 
     private Object invokeAlterBean(final MethodInvocation mi, final String alterBeanName) {
