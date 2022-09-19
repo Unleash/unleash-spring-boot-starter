@@ -44,7 +44,6 @@ public class FeatureAdvisor implements MethodInterceptor {
         this.applicationContext = applicationContext;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public Object invoke(@NotNull final MethodInvocation mi) throws Throwable {
         final Toggle toggle = getToggleAnnotation(mi);
@@ -82,7 +81,7 @@ public class FeatureAdvisor implements MethodInterceptor {
                 .map(a -> (UnleashContext) a)
                 .findFirst();
 
-        isFeatureToggled = check(toggle, mi, contextOpt);
+        isFeatureToggled = check(toggle, contextOpt);
 
         if(isFeatureToggled) {
             variantBeanName = toggle.variants().length > 0 ? getVariantBeanName(toggle.name(), toggle.variants(), contextOpt) : null;
@@ -152,35 +151,12 @@ public class FeatureAdvisor implements MethodInterceptor {
         }
     }
 
-    private boolean check(final Toggle toggle, final MethodInvocation mi, final Optional<UnleashContext> contextOpt) {
+    private boolean check(final Toggle toggle, final Optional<UnleashContext> contextOpt) {
         final var featureId = toggle.name();
-        final var arguments = mi.getArguments();
 
         return contextOpt
                 .map(context -> unleash.isEnabled(featureId, context))
                 .orElse(unleash.isEnabled(featureId));
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private boolean check(final FeatureVariant featureVariant, final MethodInvocation mi) {
-        final var variantId = featureVariant.name();
-        final Optional<UnleashContext> contextOpt;
-        final var arguments = mi.getArguments();
-        final var variant = unleash.getVariant(variantId);
-
-        if(variant != null) {
-            //If UnleashContext is explicitly passed as a parameter, it takes precedence over the annotation.
-            contextOpt = Arrays.stream(arguments)
-                    .filter(a -> a instanceof UnleashContext)
-                    .map(a -> (UnleashContext) a)
-                    .findFirst();
-
-            return contextOpt
-                    .map(context -> variant.isEnabled())
-                    .orElse(variant.isEnabled());
-        } else {
-            return false;
-        }
     }
 
     private String getExecutedBeanName(final MethodInvocation mi) {
