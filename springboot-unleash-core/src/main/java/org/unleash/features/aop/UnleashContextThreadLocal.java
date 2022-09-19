@@ -27,6 +27,7 @@ public class UnleashContextThreadLocal {
             contextMap.forEach((name, value) -> Utils.setContextBuilderProperty(builder, name, value));
         }
 
+
         return builder.build();
     }
 
