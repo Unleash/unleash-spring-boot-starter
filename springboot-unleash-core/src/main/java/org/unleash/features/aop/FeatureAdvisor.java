@@ -2,6 +2,7 @@ package org.unleash.features.aop;
 
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
+import io.getunleash.Variant;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.unleash.features.UnleashContextPreProcessor;
+import org.unleash.features.annotation.FeatureVariant;
+import org.unleash.features.annotation.FeatureVariants;
 import org.unleash.features.annotation.Toggle;
 
 import java.lang.reflect.Method;
@@ -47,31 +50,83 @@ public class FeatureAdvisor implements MethodInterceptor {
         final Toggle toggle = getToggleAnnotation(mi);
 
         if(toggle != null) {
+            final var variants = toggle.variants();
             final String alterBean = toggle.alterBean();
             final boolean usingAlterBean = StringUtils.hasText(alterBean);
+            final String executedBeanName = getExecutedBeanName(mi);
 
-            if(alterBean.equals(getExecutedBeanName(mi))) {
+            if ((variants == null || variants.variants().length == 0) && alterBean.equals(executedBeanName)) {
                 return invokePreProcessors(() -> invokeMethodInvocation(mi));
             }
 
-            return invokePreProcessors(() -> checkForFeatureToggle(mi, toggle, alterBean, usingAlterBean));
+            return invokePreProcessors(() -> checkForFeatureToggle(mi, toggle, alterBean, usingAlterBean, executedBeanName));
         }
 
         return mi.proceed();
     }
 
-    private Object checkForFeatureToggle(@NotNull MethodInvocation mi, Toggle toggle, String alterBean, boolean usingAlterBean) {
-        final boolean isFeatureToggled = check(toggle, mi);
+    private Object checkForFeatureToggle(@NotNull final MethodInvocation mi,
+                                         final Toggle toggle,
+                                         final String alterBean,
+                                         final boolean usingAlterBean,
+                                         final String executedBeanName) {
+
+        final Optional<UnleashContext> contextOpt;
+        final var arguments = mi.getArguments();
+        final boolean isFeatureToggled;
+        final String variantBeanName;
+
+        //If UnleashContext is explicitly passed as a parameter, it takes precedence over the annotation.
+        contextOpt = Arrays.stream(arguments)
+                .filter(a -> a instanceof UnleashContext)
+                .map(a -> (UnleashContext) a)
+                .findFirst();
+
+        isFeatureToggled = check(toggle, contextOpt);
 
         if(isFeatureToggled) {
-            if(usingAlterBean) {
+            variantBeanName = toggle.variants().variants().length > 0 ? getVariantBeanName(toggle.name(), toggle.variants(), contextOpt) : null;
+
+            if(!StringUtils.hasText(variantBeanName) && toggle.variants().variants().length > 1) {
+                LOGGER.warn("Variants present in toggle annotation, but no variants present for feature. Falling back to the default bean");
+                return invokeMethodInvocation(mi);
+            } if(usingAlterBean && !StringUtils.hasText(variantBeanName)) {
                 return invokeAlterBean(mi, alterBean);
+            } else if (StringUtils.hasText(variantBeanName)) {
+                if(variantBeanName.equals(executedBeanName)) {
+                    return invokeMethodInvocation(mi);
+                }
+                return invokeAlterBean(mi, variantBeanName);
             } else {
                 throw new IllegalArgumentException("alterClass not yet supported");
             }
         } else {
             return invokeMethodInvocation(mi);
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private String getVariantBeanName(final String featureName, final FeatureVariants featureVariants, final Optional<UnleashContext> contextOpt) {
+        final String alterBean;
+        final Variant variant = contextOpt.map(context -> unleash.getVariant(featureName, context)).orElse(unleash.getVariant(featureName));
+        final var featureVariantList = featureVariants.variants();
+
+        if(variant != null && variant.isEnabled()) {
+            final Optional<FeatureVariant> featureVariantOpt = Arrays.stream(featureVariantList).filter(featureVariant -> featureVariant.name().equals(variant.getName())).findAny();
+
+            alterBean = featureVariantOpt.map(FeatureVariant::variantBean).orElseGet(() -> {
+                LOGGER.warn(String.format("No bean defined for %s in the @FeatureVariants annotation. FallbackBean %s being used", variant.getName(), featureVariants.fallbackBean()));
+                return featureVariants.fallbackBean();
+            });
+
+            if(!StringUtils.hasText(alterBean)) {
+                throw new IllegalArgumentException(String.format("No bean or fallback defined for %s in the @FeatureVariants annotation", variant.getName()));
+            }
+        } else {
+            alterBean = null;
+        }
+
+        return alterBean;
     }
 
     private Object invokeMethodInvocation(final MethodInvocation methodInvocation) {
@@ -108,16 +163,8 @@ public class FeatureAdvisor implements MethodInterceptor {
         }
     }
 
-    private boolean check(final Toggle toggle, final MethodInvocation mi) {
+    private boolean check(final Toggle toggle, final Optional<UnleashContext> contextOpt) {
         final var featureId = toggle.name();
-        final Optional<UnleashContext> contextOpt;
-        final var arguments = mi.getArguments();
-
-        //If UnleashContext is explicitly passed as a parameter, it takes precedence over the annotation.
-        contextOpt = Arrays.stream(arguments)
-                .filter(a -> a instanceof UnleashContext)
-                .map(a -> (UnleashContext) a)
-                .findFirst();
 
         return contextOpt
                 .map(context -> unleash.isEnabled(featureId, context))
