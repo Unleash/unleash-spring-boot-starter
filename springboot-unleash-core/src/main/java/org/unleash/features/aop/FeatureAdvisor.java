@@ -86,7 +86,10 @@ public class FeatureAdvisor implements MethodInterceptor {
         if(isFeatureToggled) {
             variantBeanName = toggle.variants().length > 0 ? getVariantBeanName(toggle.name(), toggle.variants(), contextOpt) : null;
 
-            if(usingAlterBean && !StringUtils.hasText(variantBeanName)) {
+            if(!StringUtils.hasText(variantBeanName) && toggle.variants().length > 1) {
+                LOGGER.warn("Variants present in toggle annotation, but no variants present for feature. Falling back to the default bean");
+                return invokeMethodInvocation(mi);
+            } if(usingAlterBean && !StringUtils.hasText(variantBeanName)) {
                 return invokeAlterBean(mi, alterBean);
             } else if (StringUtils.hasText(variantBeanName)) {
                 if(variantBeanName.equals(executedBeanName)) {
