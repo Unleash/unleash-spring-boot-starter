@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 public @interface Toggle {
     String name() default "";
     String alterBean() default "";
-    FeatureVariant[] variants() default {};
+    FeatureVariants variants() default @FeatureVariants();
 }

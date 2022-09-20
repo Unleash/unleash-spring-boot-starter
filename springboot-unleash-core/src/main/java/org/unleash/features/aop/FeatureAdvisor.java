@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.unleash.features.UnleashContextPreProcessor;
 import org.unleash.features.annotation.FeatureVariant;
+import org.unleash.features.annotation.FeatureVariants;
 import org.unleash.features.annotation.Toggle;
 
 import java.lang.reflect.Method;
@@ -54,7 +55,7 @@ public class FeatureAdvisor implements MethodInterceptor {
             final boolean usingAlterBean = StringUtils.hasText(alterBean);
             final String executedBeanName = getExecutedBeanName(mi);
 
-            if ((variants == null || variants.length == 0) && alterBean.equals(executedBeanName)) {
+            if ((variants == null || variants.variants().length == 0) && alterBean.equals(executedBeanName)) {
                 return invokePreProcessors(() -> invokeMethodInvocation(mi));
             }
 
@@ -84,9 +85,9 @@ public class FeatureAdvisor implements MethodInterceptor {
         isFeatureToggled = check(toggle, contextOpt);
 
         if(isFeatureToggled) {
-            variantBeanName = toggle.variants().length > 0 ? getVariantBeanName(toggle.name(), toggle.variants(), contextOpt) : null;
+            variantBeanName = toggle.variants().variants().length > 0 ? getVariantBeanName(toggle.name(), toggle.variants(), contextOpt) : null;
 
-            if(!StringUtils.hasText(variantBeanName) && toggle.variants().length > 1) {
+            if(!StringUtils.hasText(variantBeanName) && toggle.variants().variants().length > 1) {
                 LOGGER.warn("Variants present in toggle annotation, but no variants present for feature. Falling back to the default bean");
                 return invokeMethodInvocation(mi);
             } if(usingAlterBean && !StringUtils.hasText(variantBeanName)) {
@@ -105,14 +106,22 @@ public class FeatureAdvisor implements MethodInterceptor {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private String getVariantBeanName(final String featureName, final FeatureVariant[] featureVariants, final Optional<UnleashContext> contextOpt) {
+    private String getVariantBeanName(final String featureName, final FeatureVariants featureVariants, final Optional<UnleashContext> contextOpt) {
         final String alterBean;
         final Variant variant = contextOpt.map(context -> unleash.getVariant(featureName, context)).orElse(unleash.getVariant(featureName));
+        final var featureVariantList = featureVariants.variants();
 
         if(variant != null && variant.isEnabled()) {
-            final Optional<FeatureVariant> featureVariantOpt = Arrays.stream(featureVariants).filter(featureVariant -> featureVariant.name().equals(variant.getName())).findAny();
+            final Optional<FeatureVariant> featureVariantOpt = Arrays.stream(featureVariantList).filter(featureVariant -> featureVariant.name().equals(variant.getName())).findAny();
 
-            alterBean = featureVariantOpt.map(FeatureVariant::variantBean).orElse(null);
+            alterBean = featureVariantOpt.map(FeatureVariant::variantBean).orElseGet(() -> {
+                LOGGER.warn(String.format("No bean defined for %s in the @FeatureVariants annotation. FallbackBean %s being used", variant.getName(), featureVariants.fallbackBean()));
+                return featureVariants.fallbackBean();
+            });
+
+            if(!StringUtils.hasText(alterBean)) {
+                throw new IllegalArgumentException(String.format("No bean or fallback defined for %s in the @FeatureVariants annotation", variant.getName()));
+            }
         } else {
             alterBean = null;
         }
