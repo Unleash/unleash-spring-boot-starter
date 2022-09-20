@@ -162,5 +162,20 @@ public class FeatureDemoController {
 
 - With the above, if the `demo-toggle` feature is enabled, the `featureNewService` is called even though `featureOldService` was injected.
 
+### Example for variants
+- Toggle annotation has support for variants. It can be used as follows:
+  ```java
+    @Toggle(name = "background-color-feature",
+            variants = @FeatureVariants(
+                    fallbackBean = "noBackgroundColorService",
+                    variants = {
+                            @FeatureVariant(name = "green-background-variant", variantBean = "greenBackgroundColorService"),
+                            @FeatureVariant(name = "red-background-variant", variantBean = "redBackgroundColorService")
+                    }))
+  ```
+  - In the above example, there are 2 variants `green-background-variant` and `red-background-variant` defined in unleash. Here the implementation to be used is defined. `fallbackBean` is the implementation that will be used if a variant to bean mapping is not found.
+    
+
+
 - git link to example app below:
   - https://github.com/praveenpg/unleash-starter-demo
