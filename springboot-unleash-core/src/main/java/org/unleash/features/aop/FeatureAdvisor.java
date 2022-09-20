@@ -168,7 +168,7 @@ public class FeatureAdvisor implements MethodInterceptor {
 
         return contextOpt
                 .map(context -> unleash.isEnabled(featureId, context))
-                .orElse(unleash.isEnabled(featureId));
+                .orElseGet(() -> unleash.isEnabled(featureId));
     }
 
     private String getExecutedBeanName(final MethodInvocation mi) {
