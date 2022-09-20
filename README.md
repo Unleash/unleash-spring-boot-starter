@@ -173,7 +173,7 @@ public class FeatureDemoController {
                             @FeatureVariant(name = "red-background-variant", variantBean = "redBackgroundColorService")
                     }))
   ```
-  - In the above example, there are 2 variants `green-background-variant` and `red-background-variant` defined in unleash. Here the implementation to be used is defined. `fallbackBean` is the implementation that will be used if a variant to bean mapping is not found.
+  - In the above example, there are 2 variants `green-background-variant` and `red-background-variant` defined in unleash. Here the implementation to be used for each variant is defined. `fallbackBean` is the implementation that will be used if a variant to bean mapping is not found.
     
 
 
