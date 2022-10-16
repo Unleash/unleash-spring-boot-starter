@@ -15,7 +15,7 @@
     </modules>
 
     <name>Unleash features starter</name>
-    <url>https://github.com/praveenpg/unleash-starter</url>
+    <url>https://github.com/Unleash/unleash-spring-boot-starter</url>
 
     <developers>
         <developer>
@@ -44,11 +44,11 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
+<!-- gh repo clone Unleash/unleash-spring-boot-starter -->
     <scm>
-        <connection>scm:git:git://github.com:praveenpg/unleash-starter.git</connection>
-        <developerConnection>scm:git:ssh://github.com:praveenpg/unleash-starter.git</developerConnection>
-        <url>https://github.com/praveenpg/unleash-starter/tree/master</url>
+        <connection>scm:git:git://github.com:Unleash/unleash-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Unleash/unleash-spring-boot-starter.git</developerConnection>
+        <url>https://github.com/Unleash/unleash-spring-boot-starter/tree/master</url>
     </scm>
 
     <dependencyManagement>
