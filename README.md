@@ -10,7 +10,7 @@ The following dependency needs to be added to the springboot project pom.
 
 ```xml
 <dependency>
-    <groupId>net.leodb.unleash</groupId>
+    <groupId>io.getunleash</groupId>
     <artifactId>springboot-unleash-starter</artifactId>
     <version>Latest version here</version>
 </dependency>
