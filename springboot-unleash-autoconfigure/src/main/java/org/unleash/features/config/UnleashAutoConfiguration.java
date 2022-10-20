@@ -61,7 +61,7 @@ public class UnleashAutoConfiguration {
                 .customHttpHeader("Authorization", unleashProperties.getApiToken())
                 .projectName(unleashProperties.getProjectName())
                 .synchronousFetchOnInitialisation(unleashProperties.isSynchronousFetchOnInitialisation())
-                .instanceId(!StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
+                .instanceId(StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
                         UUID.randomUUID().toString());
 
         setDisableMetrics(builder, unleashProperties);
