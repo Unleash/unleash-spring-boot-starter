@@ -15,7 +15,7 @@
     </modules>
 
     <name>Unleash features starter</name>
-    <url>https://github.com/praveenpg/unleash-starter</url>
+    <url>https://github.com/Unleash/unleash-spring-boot-starter</url>
 
     <developers>
         <developer>
@@ -33,7 +33,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>2.7.4</spring.boot.version>
+        <spring.boot.version>2.7.5co</spring.boot.version>
         <spring.version>5.3.23</spring.version>
         <guava.version>31.0.1-jre</guava.version>
     </properties>
@@ -46,9 +46,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com:praveenpg/unleash-starter.git</connection>
-        <developerConnection>scm:git:ssh://github.com:praveenpg/unleash-starter.git</developerConnection>
-        <url>https://github.com/praveenpg/unleash-starter/tree/master</url>
+        <connection>scm:git:git://github.com:Unleash/unleash-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Unleash/unleash-spring-boot-starter.git</developerConnection>
+        <url>https://github.com/Unleash/unleash-spring-boot-starter/tree/master</url>
     </scm>
 
     <dependencyManagement>
