@@ -179,3 +179,18 @@ public class FeatureDemoController {
 
 - git link to example app below:
   - https://github.com/praveenpg/unleash-starter-demo
+
+
+## Development
+
+### Releasing a new version
+
+If you have push rights to the repo, make sure there are no modifications that haven't been checked in. Then run
+```bash
+mvn release:prepare
+```
+and answer the prompts for new release version. 
+
+Once that's done, a new tag should've been created in the repo, and the [deploy release](./.github/workflows/deploy-release.yml) workflow will do the actual deploy.
+
+Then, run mvn release:clean to clean your repo for release artifacts which only clutters up the main branch. This will leave you 
