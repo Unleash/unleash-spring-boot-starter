@@ -24,6 +24,15 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.version }}
           cache: 'maven'
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          server-id: 'osrrh'
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
       - name: Run tests
         run: |
           mvn clean verify -B
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
