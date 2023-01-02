@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.getunleash</groupId>
     <artifactId>unleash-starter</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <modules>
         <module>springboot-unleash-core</module>
         <module>springboot-unleash-autoconfigure</module>
@@ -33,8 +31,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>2.7.4</spring.boot.version>
-        <spring.version>5.3.23</spring.version>
+        <spring.boot.version>2.7.7</spring.boot.version>
+        <spring.version>5.3.24</spring.version>
         <guava.version>31.0.1-jre</guava.version>
     </properties>
 
@@ -49,7 +47,8 @@
         <connection>scm:git:git://github.com:Unleash/unleash-spring-boot-starter.git</connection>
         <developerConnection>scm:git:ssh://github.com:Unleash/unleash-spring-boot-starter.git</developerConnection>
         <url>https://github.com/Unleash/unleash-spring-boot-starter/tree/master</url>
-    </scm>
+      <tag>v1.0.0</tag>
+  </scm>
 
     <dependencyManagement>
         <dependencies>
