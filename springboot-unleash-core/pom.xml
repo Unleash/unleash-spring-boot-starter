@@ -70,7 +70,7 @@
                 <version>3.10.0</version>
                 <configuration>
                     <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <release>11</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -78,8 +78,8 @@
                 <artifactId>aspectj-maven-plugin</artifactId>
                 <version>1.14.0</version>
                 <configuration>
-                    <complianceLevel>16</complianceLevel>
-                    <source>16</source>
+                    <complianceLevel>17</complianceLevel>
+                    <source>17</source>
                     <showWeaveInfo>true</showWeaveInfo>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <Xlint>ignore</Xlint>
@@ -132,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>3.4.1</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>

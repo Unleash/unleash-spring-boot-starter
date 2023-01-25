@@ -9,11 +9,11 @@ import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.unleash.features.aop.UnleashContextThreadLocal;
@@ -27,8 +27,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-@Configuration
 @EnableConfigurationProperties(UnleashProperties.class)
+@AutoConfiguration
 @ComponentScan("org.unleash.features.aop")
 public class UnleashAutoConfiguration {
     @Autowired(required = false)

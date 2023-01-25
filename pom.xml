@@ -28,11 +28,11 @@
     </description>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>2.7.7</spring.boot.version>
-        <spring.version>5.3.24</spring.version>
+        <spring.boot.version>3.0.2</spring.boot.version>
+        <spring.version>6.0.4</spring.version>
         <guava.version>31.0.1-jre</guava.version>
     </properties>
 
@@ -171,7 +171,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
