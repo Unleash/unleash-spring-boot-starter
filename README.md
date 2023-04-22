@@ -19,7 +19,7 @@ The following dependency needs to be added to the springboot project pom.
 ### Add the following to application.yaml
 ```yaml
 io:
-  getunleashed:
+  getunleash:
     app-name: <application-name>
     instance-id: <instance-id>
     environment: <environment>
@@ -29,7 +29,7 @@ io:
 ex:
 ```yaml
 io:
-  getunleashed:
+  getunleash:
     app-name: springboot-test
     instance-id: instance x
     environment: development
@@ -49,7 +49,7 @@ public UnleashContextProvider unleashContextProvider(final UnleashProperties unl
         UnleashContext.Builder builder = UnleashContext.builder();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User) {
-            builder.userId((((User)principal).getUsername());
+            builder.userId(((User)principal).getUsername());
         }
         
         return builder
