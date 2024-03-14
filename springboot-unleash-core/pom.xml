@@ -14,7 +14,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aspectj.version>1.9.9.1</aspectj.version>
-        <unleash.client.version>7.0.0</unleash.client.version>
+        <unleash.client.version>9.2.0</unleash.client.version>
     </properties>
 
     <dependencies>
