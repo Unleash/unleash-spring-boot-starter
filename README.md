@@ -128,7 +128,7 @@ public class FeatureDemoController {
     }
     
     @GetMapping
-    public String feature(@RequestMapping final String name) {
+    public String feature(@RequestParam final String name) {
         return featureDemoService.getDemoString(name, UnleashContext.builder().addProperty("name", name).build());
     }
 }
@@ -154,7 +154,7 @@ public class FeatureDemoController {
     }
     
     @GetMapping
-    public String feature(@RequestMapping @Context(name = "name") final String name) {
+    public String feature(@RequestParam @Context(name = "name") final String name) {
         return featureDemoService.getDemoString(name);
     }
 }
