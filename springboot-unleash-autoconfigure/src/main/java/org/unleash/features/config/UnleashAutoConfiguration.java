@@ -4,6 +4,8 @@ import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import io.getunleash.UnleashContextProvider;
+import io.getunleash.event.UnleashSubscriber;
+import io.getunleash.event.NoOpSubscriber;
 import io.getunleash.repository.OkHttpFeatureFetcher;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
@@ -44,7 +46,13 @@ public class UnleashAutoConfiguration {
     }
 
     @Bean
-    public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider) {
+    @ConditionalOnMissingBean
+    public UnleashSubscriber unleashSubscriber() {
+        return new NoOpSubscriber();
+    }
+
+    @Bean
+    public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider, UnleashSubscriber unleashSubscriber) {
         final var provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
         final var builder = UnleashConfig
                 .builder()
@@ -60,6 +68,7 @@ public class UnleashAutoConfiguration {
                 .sendMetricsReadTimeout(unleashProperties.getSendMetricsReadTimeout())
                 .customHttpHeader("Authorization", unleashProperties.getApiToken())
                 .projectName(unleashProperties.getProjectName())
+                .subscriber(unleashSubscriber)
                 .synchronousFetchOnInitialisation(unleashProperties.isSynchronousFetchOnInitialisation())
                 .instanceId(StringUtils.hasText(unleashProperties.getInstanceId()) ? unleashProperties.getInstanceId() :
                         UUID.randomUUID().toString());
