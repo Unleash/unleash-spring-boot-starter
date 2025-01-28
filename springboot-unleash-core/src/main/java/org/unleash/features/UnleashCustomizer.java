@@ -14,7 +14,7 @@ public interface UnleashCustomizer {
     /**
      * Callback to customize a {@link UnleashConfig.Builder} instance.
      *
-     * @param builder codec configurer to customize
+     * @param builder Unleash builder to customize
      */
     void customize(UnleashConfig.Builder builder);
 
