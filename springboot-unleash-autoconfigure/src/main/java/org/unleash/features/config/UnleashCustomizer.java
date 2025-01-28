@@ -1,4 +1,4 @@
-package org.unleash.features;
+package org.unleash.features.config;
 
 import io.getunleash.util.UnleashConfig;
 

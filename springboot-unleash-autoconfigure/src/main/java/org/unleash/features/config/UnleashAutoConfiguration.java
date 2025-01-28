@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.unleash.features.UnleashCustomizer;
 import org.unleash.features.aop.UnleashContextThreadLocal;
 import org.unleash.features.aop.Utils;
 import org.unleash.features.autoconfigure.UnleashProperties;
@@ -28,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
@@ -55,8 +55,12 @@ public class UnleashAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public Unleash unleash(final UnleashProperties unleashProperties, UnleashContextProvider unleashContextProvider,
-                           UnleashSubscriber unleashSubscriber, ObjectProvider<UnleashCustomizer> customizers) {
+    public Unleash unleash(final UnleashProperties unleashProperties,
+                           UnleashContextProvider unleashContextProvider,
+                           UnleashSubscriber unleashSubscriber,
+                           ObjectProvider<UnleashCustomizer> customizers,
+                           Function<UnleashConfig,DefaultUnleash> unleashFactory
+    ) {
         final var provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
         final var builder = UnleashConfig
                 .builder()
@@ -84,8 +88,14 @@ public class UnleashAutoConfiguration {
 
         customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 
-        return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(builder.build(), strategyMap.values().toArray(new Strategy[0])) :
-                new DefaultUnleash(builder.build());
+        return unleashFactory.apply(builder.build());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Function<UnleashConfig,DefaultUnleash> unleashFactory(){
+       return config -> !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(config, strategyMap.values().toArray(new Strategy[0])) :
+               new DefaultUnleash(config);
     }
 
     /**
