@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
@@ -55,11 +54,10 @@ public class UnleashAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public Unleash unleash(final UnleashProperties unleashProperties,
-                           UnleashContextProvider unleashContextProvider,
-                           UnleashSubscriber unleashSubscriber,
-                           ObjectProvider<UnleashCustomizer> customizers,
-                           Function<UnleashConfig,DefaultUnleash> unleashFactory
+    public UnleashConfig unleashConfig(final UnleashProperties unleashProperties,
+                                       UnleashContextProvider unleashContextProvider,
+                                       UnleashSubscriber unleashSubscriber,
+                                       ObjectProvider<UnleashCustomizer> customizers
     ) {
         final var provider = getUnleashContextProviderWithThreadLocalSupport(unleashContextProvider);
         final var builder = UnleashConfig
@@ -88,14 +86,14 @@ public class UnleashAutoConfiguration {
 
         customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 
-        return unleashFactory.apply(builder.build());
+        return builder.build();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public Function<UnleashConfig,DefaultUnleash> unleashFactory(){
-       return config -> !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(config, strategyMap.values().toArray(new Strategy[0])) :
-               new DefaultUnleash(config);
+    public Unleash unleash(UnleashConfig config) {
+        return !CollectionUtils.isEmpty(strategyMap) ? new DefaultUnleash(config, strategyMap.values().toArray(new Strategy[0])) :
+                new DefaultUnleash(config);
     }
 
     /**

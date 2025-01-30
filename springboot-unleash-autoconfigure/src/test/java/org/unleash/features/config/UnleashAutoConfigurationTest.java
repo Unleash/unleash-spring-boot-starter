@@ -23,11 +23,9 @@ import org.unleash.features.autoconfigure.UnleashProperties;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
 
 /**
@@ -44,12 +42,12 @@ class UnleashAutoConfigurationTest {
     @Test
     void shouldSupplyDefaultBeans() {
         this.contextRunner
-                .withUserConfiguration(DefaultConfiguration.class)
                 .withPropertyValues(requiredProperties)
                 .run((context) -> {
                     assertThat(context).hasSingleBean(UnleashContextProvider.class);
                     assertThat(context).hasSingleBean(UnleashSubscriber.class);
                     assertThat(context).hasSingleBean(Unleash.class);
+                    assertThat(context).hasSingleBean(UnleashConfig.class);
                 });
     }
 
@@ -94,14 +92,14 @@ class UnleashAutoConfigurationTest {
     static class DefaultConfiguration {
 
         @Bean
-        public Function<UnleashConfig, DefaultUnleash> unleashFactory() {
-            return config -> spy(new DefaultUnleash(config,
+        public Unleash unleash(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") UnleashConfig config) {
+            return new DefaultUnleash(config,
                     new FeatureRepository(config),
                     new HashMap<>(),
                     mock(UnleashContextProvider.class),
                     mock(EventDispatcher.class),
                     mock(UnleashMetricService.class),
-                    false));
+                    false);
         }
 
     }
