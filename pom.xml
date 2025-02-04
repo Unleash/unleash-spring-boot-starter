@@ -124,13 +124,93 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>publication</id>
+            <properties>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+                        <distributionManagement>
+                <snapshotRepository>
+                    <id>sonatype-nexus-snapshots</id>
+                    <name>Sonatype Nexus Snapshots</name>
+                    <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+                </snapshotRepository>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Nexus Release Repository</name>
+                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
     </profiles>
     <build>
         <plugins>
+        <!-- JReleaser -->
+            <plugin>
+              <groupId>org.jreleaser</groupId>
+              <artifactId>jreleaser-maven-plugin</artifactId>
+              <version>1.16.0</version>
+              <inherited>true</inherited>
+              <configuration>
+                <jreleaser>
+                  <signing>
+                    <active>ALWAYS</active>
+                    <armored>true</armored>
+                 </signing>
+                 <deploy>
+                   <maven>
+                     <mavenCentral>
+                       <sonatype>
+                         <active>ALWAYS</active>
+                         <url>https://central.sonatype.com/api/v1/publisher</url>
+                         <stagingRepositories>target/staging-deploy</stagingRepositories>
+                      </sonatype>
+                      </mavenCentral>
+                    </maven>
+                 </deploy>
+                </jreleaser>
+              </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.1.1</version>
                 <configuration>
                     <releaseProfiles>release</releaseProfiles>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
