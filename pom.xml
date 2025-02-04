@@ -186,7 +186,7 @@
               <groupId>org.jreleaser</groupId>
               <artifactId>jreleaser-maven-plugin</artifactId>
               <version>1.16.0</version>
-              <inherited>false</inherited>
+              <inherited>true</inherited>
               <configuration>
                 <jreleaser>
                   <signing>
