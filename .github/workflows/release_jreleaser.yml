@@ -42,9 +42,8 @@ jobs:
         run: |
           mvn --no-transfer-progress --batch-mode -Ppublication clean deploy -DaltDeploymentRepository=local::default::file://`pwd`/target/staging-deploy
       - name: Run JReleaser
-        uses: jreleaser/release-action@v2
-        with:
-          setup-java: false
+        run: |
+          mvn jreleaser:full-release
         env:
           JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }}
           JRELEASER_GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
