@@ -6,7 +6,7 @@
         <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Unleash Spring Boot starter</name>
     <artifactId>springboot-unleash-starter</artifactId>
     <description>Unleash Spring Boot Starter</description>
     <properties>

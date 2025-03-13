@@ -6,9 +6,10 @@
         <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Unleash Spring Boot Starter Core</name>
     <artifactId>springboot-unleash-core</artifactId>
     <description>Core module for Unleash Spring Boot starter</description>
+    <url>https://github.com/Unleash/unleash-spring-boot-starter</url>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
