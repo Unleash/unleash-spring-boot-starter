@@ -21,6 +21,11 @@
             <email>praveen.govindan@gmail.com</email>
             <organization>Praveen Govindan</organization>
         </developer>
+        <developer>
+            <name>Christopher Kolstad</name>
+            <email>chriswk@getunleash.io</email>
+            <organization>Unleash</organization>
+        </developer>
     </developers>
 
     <description>
