@@ -7,6 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>Unleash Spring Boot starter</name>
+    <url>https://github.com/unleash/unleash-spring-boot-starter</url>
     <artifactId>springboot-unleash-starter</artifactId>
     <description>Unleash Spring Boot Starter</description>
     <properties>
