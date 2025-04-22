@@ -5,7 +5,7 @@
     <groupId>io.getunleash</groupId>
     <artifactId>unleash-starter</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.2</version>
+    <version>1.2.3-SNAPSHOT</version>
     <modules>
         <module>springboot-unleash-core</module>
         <module>springboot-unleash-autoconfigure</module>
@@ -51,7 +51,7 @@
         <connection>scm:git:git@github.com:Unleash/unleash-spring-boot-starter.git</connection>
         <developerConnection>scm:git:git@github.com:Unleash/unleash-spring-boot-starter.git</developerConnection>
         <url>https://github.com/Unleash/unleash-spring-boot-starter/tree/main</url>
-      <tag>v1.2.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencyManagement>
