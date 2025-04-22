@@ -3,7 +3,7 @@
     <parent>
         <artifactId>unleash-starter</artifactId>
         <groupId>io.getunleash</groupId>
-        <version>1.2.0</version>
+        <version>1.2.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>Unleash Spring Boot Starter Autoconfigure</name>
