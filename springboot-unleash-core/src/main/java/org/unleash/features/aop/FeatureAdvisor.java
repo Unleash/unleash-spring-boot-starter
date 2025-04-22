@@ -159,7 +159,14 @@ public class FeatureAdvisor implements MethodInterceptor {
 
             return method.invoke(alterBean, mi.getArguments());
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Cannot invoke method %s on bean %s", method.getName(), alterBeanName), e);
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else if (cause instanceof Error) {
+                throw (Error) cause;
+            } else {
+                throw new RuntimeException(cause);
+            }
         }
     }
 
