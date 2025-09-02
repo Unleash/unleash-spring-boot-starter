@@ -5,7 +5,6 @@ import io.getunleash.UnleashContext;
 import io.getunleash.Variant;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
@@ -31,7 +30,6 @@ import java.util.function.Supplier;
 
 @Component("feature.advisor")
 public class FeatureAdvisor implements MethodInterceptor {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureAdvisor.class);
     private final Unleash unleash;
     private final ApplicationContext applicationContext;
@@ -46,7 +44,7 @@ public class FeatureAdvisor implements MethodInterceptor {
     }
 
     @Override
-    public Object invoke(@NotNull final MethodInvocation mi) throws Throwable {
+    public Object invoke(final MethodInvocation mi) throws Throwable {
         final Toggle toggle = getToggleAnnotation(mi);
 
         if(toggle != null) {
@@ -65,7 +63,7 @@ public class FeatureAdvisor implements MethodInterceptor {
         return mi.proceed();
     }
 
-    private Object checkForFeatureToggle(@NotNull final MethodInvocation mi,
+    private Object checkForFeatureToggle(final MethodInvocation mi,
                                          final Toggle toggle,
                                          final String alterBean,
                                          final boolean usingAlterBean,

@@ -9,7 +9,6 @@ import io.getunleash.event.UnleashSubscriber;
 import io.getunleash.repository.OkHttpFeatureFetcher;
 import io.getunleash.strategy.Strategy;
 import io.getunleash.util.UnleashConfig;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -99,7 +98,6 @@ public class UnleashAutoConfiguration {
     /**
      * Method always wraps the created UnleashContextProvider with threadLocal support.
      */
-    @NotNull
     @SuppressWarnings("ConstantConditions")
     private UnleashContextProvider getUnleashContextProviderWithThreadLocalSupport(UnleashContextProvider unleashContextProvider) {
         return () -> {

@@ -36,8 +36,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>3.2.3</spring.boot.version>
-        <guava.version>31.0.1-jre</guava.version>
+        <spring.boot.version>3.5.5</spring.boot.version>
+        <guava.version>33.4.8-jre</guava.version>
     </properties>
 
     <licenses>
@@ -85,7 +85,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.10.1</version>
+                        <version>3.11.3</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -125,7 +125,7 @@
             <plugin>
               <groupId>org.jreleaser</groupId>
               <artifactId>jreleaser-maven-plugin</artifactId>
-              <version>1.17.0</version>
+              <version>1.20.0</version>
               <inherited>false</inherited>
               <configuration>
                 <jreleaser>
@@ -161,7 +161,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
