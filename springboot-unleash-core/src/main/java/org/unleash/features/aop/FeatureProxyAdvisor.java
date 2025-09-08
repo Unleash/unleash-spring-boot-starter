@@ -1,6 +1,5 @@
 package org.unleash.features.aop;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -43,7 +42,7 @@ public class FeatureProxyAdvisor extends AbstractAutoProxyCreator {
     /** {@inheritDoc} */
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     @Override
-    protected Object[] getAdvicesAndAdvisorsForBean(final Class<?> beanClass, @NotNull final String beanName, final TargetSource targetSource) {
+    protected Object[] getAdvicesAndAdvisorsForBean(final Class<?> beanClass, final String beanName, final TargetSource targetSource) {
         // Do not use any AOP here as still working with classes and not objects
         if (!beanClass.isInterface()) {
             final Class<?>[] interfaces;
