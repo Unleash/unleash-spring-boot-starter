@@ -1,17 +1,17 @@
 package org.unleash.features.config;
 
-import io.getunleash.DefaultUnleash;
-import io.getunleash.Unleash;
-import io.getunleash.UnleashContextProvider;
-import io.getunleash.event.EventDispatcher;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
+
+import io.getunleash.*;
 import io.getunleash.event.NoOpSubscriber;
 import io.getunleash.event.UnleashSubscriber;
-import io.getunleash.metric.UnleashMetricService;
-import io.getunleash.repository.FeatureRepository;
 import io.getunleash.strategy.Strategy;
-import io.getunleash.strategy.UnknownStrategy;
 import io.getunleash.util.UnleashConfig;
 import io.getunleash.util.UnleashScheduledExecutorImpl;
+import java.net.URI;
+import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -19,14 +19,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.unleash.features.autoconfigure.UnleashProperties;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.unleash.features.autoconfigure.UnleashProperties.PREFIX;
 
 /**
  * Tests for {@link UnleashAutoConfiguration}.
@@ -68,10 +60,6 @@ class UnleashAutoConfigurationTest {
                     assertThat(unleash)
                             .extracting("config.unleashSubscriber")
                             .isInstanceOf(NoOpSubscriber.class);
-
-                    assertThat(unleash)
-                            .extracting("config.fallbackStrategy")
-                            .isInstanceOf(UnknownStrategy.class);
                 });
     }
 
@@ -94,12 +82,8 @@ class UnleashAutoConfigurationTest {
         @Bean
         public Unleash unleash(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") UnleashConfig config) {
             return new DefaultUnleash(config,
-                    new FeatureRepository(config),
-                    new HashMap<>(),
-                    mock(UnleashContextProvider.class),
-                    mock(EventDispatcher.class),
-                    mock(UnleashMetricService.class),
-                    false);
+                    mock(EngineProxy.class)
+            );
         }
 
     }
@@ -117,7 +101,7 @@ class UnleashAutoConfigurationTest {
                 }
 
                 @Override
-                public boolean isEnabled(Map<String, String> map) {
+                public boolean isEnabled(Map<String, String> map, UnleashContext unleashContext) {
                     return false;
                 }
             });
